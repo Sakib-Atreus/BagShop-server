@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import app from "./app";
 import config from "./config";
 import { Server } from "http";
+import { adminSeeder } from "./seeder/adminSeeder";
 
 const port = config.port;
 
@@ -14,6 +15,11 @@ async function main() {
     if (dbConnection.connection.readyState !== 1) {
       throw new Error("Error connecting to database");
     }
+
+    // Seed admin only once
+    await adminSeeder();
+
+
     server = app.listen(port, () => {
       console.log(`Server is running on http://localhost:${port}`);
     });

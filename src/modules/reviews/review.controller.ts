@@ -8,26 +8,21 @@ import catchAsync from "../../util/catchAsync";
 
 // Add a review
 const addReview = catchAsync(async (req: Request, res: Response) => {
-  const { userId, variantId, rating, comment } = req.body;
+  const { userId, productId, rating, comment } = req.body;
 
   // Validate the data using Zod
   reviewValidator.parse({
     userId,
-    variantId,
+    productId,
     rating,
     comment,
   });
 
   const userObjectId = new Types.ObjectId(userId);
-  const productObjectId = new Types.ObjectId(variantId);
+  const productObjectId = new Types.ObjectId(productId);
 
   // Call the service to add the review
-  const newReview = await ReviewService.addReview(
-    userObjectId,
-    productObjectId,
-    rating,
-    comment
-  );
+  const newReview = await ReviewService.addReview(userObjectId, productObjectId, rating, comment);
 
   sendResponse(res, {
     statusCode: 201,

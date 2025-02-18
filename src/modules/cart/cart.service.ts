@@ -53,6 +53,7 @@ const addToCart = async (
       productImg: findProduct.images[0] || null,
       productName: product.name,
       productCode: product.productCode,
+      productId: findProduct.productId,
 
       color: findProduct.colorName,
       price: product.currentPrice,

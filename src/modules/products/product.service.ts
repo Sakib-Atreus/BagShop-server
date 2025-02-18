@@ -141,7 +141,7 @@ const getAllProductsFromDB = async (query: Record<string, unknown>) => {
 
 // Get a single product by ID
 const getSingleProductFromDB = async (_id: string) => {
-  const result = await ProductModel.findOne({ _id });
+  const result = await VariantModel.findOne({ _id }).populate("productId");
   return result;
 };
 

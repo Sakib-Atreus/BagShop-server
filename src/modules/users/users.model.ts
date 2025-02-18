@@ -25,6 +25,7 @@ const EachProductInCartSchema = new Schema<TEachProductInCurt>(
     veriantId: { type: String, required: true },
     productImg: { type: String, required: true },
     productName: { type: String, required: true },
+    productId: { type: String, required: true },
     productCode: { type: String, required: true },
     color: { type: String, required: true },
     price: { type: Number, required: true },
@@ -61,7 +62,7 @@ const WishListSchema = new Schema<TWishList>(
       {
         productId: {
           type: Schema.Types.ObjectId,
-          ref: "ProductListCollection",
+          ref: "Product",
           required: true,
         },
         name: { type: String, required: true },
@@ -222,9 +223,9 @@ const ShippingLineSchema = new Schema(
 // user collection
 const UserSchema = new Schema<TUser>(
   {
-    mobileNo: { type: String, required: true },
+    mobileNo: { type: String, required: false },
     name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: false, unique: true },
     img: { type: String, required: false },
     role: {
       type: String,
@@ -289,18 +290,24 @@ const UserSchema = new Schema<TUser>(
 
 // Pre-save hook to hash the password before saving it to the database
 UserSchema.pre<TUser>("save", async function (next) {
-  if (!this.isModified("password")) {
-    return next();
+  // Validate that at least one of mobileNo or email is provided
+  if (!this.mobileNo && !this.email) {
+    return next(new Error("Either mobileNo or email must be provided."));
   }
 
-  try {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(this.password, salt);
-    this.password = hashedPassword;
-    next();
-  } catch (error) {
-    next(error as Error);
+  // If the password is modified, hash it before saving
+  if (this.isModified("password")) {
+    try {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(this.password, salt);
+      this.password = hashedPassword;
+    } catch (error) {
+      return next(error as Error);
+    }
   }
+
+  // Proceed with saving the document
+  next();
 });
 
 // Method to compare passwords

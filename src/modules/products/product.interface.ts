@@ -14,7 +14,7 @@ export type Product = {
   productCode: string;
   designer: string;
   bagType: string;
-  variantId: [Types.ObjectId] | Tvariant;
+  variantId: [Types.ObjectId] | Tvariant[];
   totalQuantity?: number;
   sellsQuantity: number;
   totalSalesAmount?: number;

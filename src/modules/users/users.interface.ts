@@ -4,7 +4,7 @@ import { TPaymentMathod, TUserRole } from "../../constent";
 export type TShippingLine = {
   userId: Types.ObjectId;
   shopId: Types.ObjectId;
-  shippingProductList: Types.ObjectId[]; // woll take order ids
+  shippingProductList: Types.ObjectId[]; // will take order ids
 };
 
 export type TEachOrder = {
@@ -35,6 +35,7 @@ export type TEachProductInCurt = {
   veriantId: string;
   productImg: string;
   productName: string;
+  productId: string;
   productCode: string;
   color: string;
   price: number;
@@ -98,8 +99,8 @@ export type TSellsList = {
 export type TUser = {
   isModified?: any;
   name: string;
-  mobileNo: string;
-  email: string;
+  mobileNo?: string;
+  email?: string;
   password: string;
   img?: string;
   role?: TUserRole;

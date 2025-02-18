@@ -3,16 +3,11 @@ import { ReviewModel } from "./review.model";
 import { Types } from "mongoose";
 
 // Add a review to the product
-const addReview = async (
-  userId: Types.ObjectId,
-  variantId: Types.ObjectId,
-  rating: number,
-  comment: string
-) => {
+const addReview = async (userId: Types.ObjectId, productId: Types.ObjectId, rating: number, comment: string) => {
   // Create a new review
   const newReview = new ReviewModel({
     userId,
-    variantId,
+    productId,
     rating,
     comment,
   });
@@ -25,10 +20,7 @@ const addReview = async (
 
 // Fetch all reviews for a product
 const getReviewsByProductId = async (productId: Types.ObjectId) => {
-  const reviews = await ReviewModel.find({ productId }).populate(
-    "userId",
-    "email"
-  );
+  const reviews = await ReviewModel.find({ productId }).populate("userId", "email");
   return reviews;
 };
 

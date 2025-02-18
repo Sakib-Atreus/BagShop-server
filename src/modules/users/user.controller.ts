@@ -31,12 +31,18 @@ const makeAnorder = catchAsync(async (req, res) => {
   const userId = req.user!.id;
   const orderListId = req.user!.orderListId;
   const payload = req.body;
+  const takeAllAvailable = req.query.takeAllAvailable || false;
 
   if (!userId || !orderListId) {
     throw new Error("!userId || !orderListId || !cartId");
   }
 
-  const result = await userServices.makeAnorder(userId, orderListId, payload);
+  const result = await userServices.makeAnorder(
+    userId,
+    orderListId,
+    payload,
+    takeAllAvailable
+  );
   if (!result) {
     throw new Error("something went wrong");
   }
@@ -56,12 +62,12 @@ const makeAnorder = catchAsync(async (req, res) => {
   } else if (result.message === "ok") {
     res.status(200).json({
       status: "success",
-      message: result,
+      result,
     });
   } else {
     res.status(500).json({
       success: false,
-      message: "Unexpected payment status",
+      data: result,
     });
   }
 });

@@ -9,9 +9,9 @@ const reviewSchema = new Schema<IReview>(
       ref: "UserCollection",
       required: true,
     },
-    variantId: {
+    productId: {
       type: Schema.Types.ObjectId,
-      ref: "VariantCollection",
+      ref: "Product",
       required: true,
     },
     rating: { type: Number, min: 1, max: 5, required: true },
