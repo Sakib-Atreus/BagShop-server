@@ -4,6 +4,7 @@ import httpStatus from "http-status";
 import { partialProductValidationSchema } from "./product.validator";
 import catchAsync from "../../util/catchAsync";
 import sendResponse from "../../util/sendResponse";
+import { uploadMultipleImages } from "../../util/uploadImgToCloudynary";
 
 // Create a product
 const createProduct = catchAsync(async (req: Request, res: Response) => {
@@ -51,8 +52,8 @@ const getAllProducts = catchAsync(async (req, res) => {
 
 // Get a single product
 const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
-  const { productId } = req.params;
-  const result = await ProductServices.getSingleProductFromDB(productId);
+  const { variantId } = req.params;
+  const result = await ProductServices.getSingleProductFromDB(variantId);
 
   if (!result) {
     return res
@@ -60,16 +61,25 @@ const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
       .json({ success: false, message: "Product not found!" });
   }
 
+  // Rename productId to product in the response data
+  const { productId, ...rest } = result.toObject(); // Convert to plain object
+  const responseData = {
+    ...rest,
+    product: productId, // Rename productId to product
+  };
+
   res.status(200).json({
     success: true,
     message: "Product fetched successfully!",
-    data: result,
+    data: responseData,
   });
 });
 
 // Delete a product
 const deleteProduct = catchAsync(async (req: Request, res: Response) => {
   const { productId } = req.params;
+  console.log("Deleting product with ID:", productId); // Add a debug log to check the ID
+
   const isExist = await ProductServices.getSingleProductFromDB(productId);
 
   if (!isExist) {
@@ -87,7 +97,15 @@ const deleteProduct = catchAsync(async (req: Request, res: Response) => {
 // Update a product
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
   const { productId } = req.params;
-  const updateData = req.body;
+  const updateData = JSON.parse(req.body.data || "{}");
+  const files = req.files as Express.Multer.File[];
+
+  if (files && files.length > 0) {
+    const filePaths = files.map((file) => file.path);
+    const uploadedImages = await uploadMultipleImages(filePaths);
+    updateData.images = uploadedImages;
+  }
+
   const parsedProductData = partialProductValidationSchema.parse(updateData);
 
   const result = await ProductServices.updateProductFromDB(
