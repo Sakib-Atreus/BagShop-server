@@ -9,4 +9,10 @@ router.post("/", WishlistController.addProductToWishlist);
 // Route to get the user's wishlist
 router.get("/:userID", WishlistController.getWishlist);
 
+// Route to remove a product from the wishlist
+router.delete(
+  "/:userID/:productID",
+  WishlistController.removeProductFromWishlist
+);
+
 export const WishlistRoute = router;

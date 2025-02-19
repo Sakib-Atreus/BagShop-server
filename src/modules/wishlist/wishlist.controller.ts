@@ -53,7 +53,31 @@ const getWishlist = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// Controller for removing a product from the wishlist
+const removeProductFromWishlist = catchAsync(
+  async (req: Request, res: Response) => {
+    const { userID, productID } = req.params;
+
+    const userObjectId = new Types.ObjectId(userID);
+    const productObjectId = new Types.ObjectId(productID);
+
+    // Remove the product using the service
+    const result = await WishlistService.removeProductFromWishlist(
+      userObjectId,
+      productObjectId
+    );
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Product removed from wishlist successfully!",
+      data: result,
+    });
+  }
+);
+
 export const WishlistController = {
   addProductToWishlist,
   getWishlist,
+  removeProductFromWishlist,
 };
